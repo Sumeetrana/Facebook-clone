@@ -4,6 +4,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { readdirSync } = require("fs");
 
+const userRoutes = require("./routes/user.js");
+
 const app = express();
 dotenv.config();
 
@@ -18,7 +20,8 @@ mongoose.connect(process.env.DB_URL)
 
 // routes
 // dynamically adds all the routes from routes folder 
-readdirSync('./routes').map(file => app.use("/", require("./routes/" + file)));
+// readdirSync('./routes').map(file => app.use("/", require("./routes/" + file)));
+app.use("/", userRoutes);
 
 app.listen(process.env.PORT || 6060, () => {
   console.log("server is running...");
