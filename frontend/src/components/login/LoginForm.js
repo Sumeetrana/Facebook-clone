@@ -1,18 +1,27 @@
 import * as Yup from "yup";
+import Cookies from "js-cookie";
 import { Formik, Form } from "formik";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import DotLoader from "react-spinners/DotLoader";
 
 import Footer from './Footer';
 import LoginInput from '../inputs/loginInput';
+import axios from "axios";
+
 
 const loginInfo = {
   email: "",
   password: ""
 }
 
-const LoginForm = () => {
+const LoginForm = ({ setVisible }) => {
   const [login, setLogin] = useState(loginInfo);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
   const { email, password } = login;
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
@@ -25,6 +34,10 @@ const LoginForm = () => {
       .max(100),
     password: Yup.string().required("Password is required"),
   });
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   return (
     <div className="login">
       <div className="login_wrapper">
@@ -44,6 +57,29 @@ const LoginForm = () => {
                   password,
                 }}
                 validationSchema={loginValidation}
+                onSubmit={async () => {
+                  try {
+                    setLoading(true);
+                    const { data } = await axios.post(
+                      `${process.env.REACT_APP_BACKEND_URL}/login`,
+                      {
+                        email,
+                        password
+                      }
+                    )
+                    setLoading(false);
+                    setError("");
+                    setSuccess(data.message);
+                    setTimeout(() => {
+                      dispatch({ type: "LOGIN", payload: data });
+                      Cookies.set("user", data);
+                      navigate("/");
+                    }, 2000);
+                  } catch (error) {
+                    setLoading(false);
+                    setError(error.response?.data.message);
+                  }
+                }}
               >
                 {(formik) => (
                   <Form>
@@ -69,8 +105,11 @@ const LoginForm = () => {
               <Link to="/forgot" className="forgot_password">
                 Forgotten password?
               </Link>
+              <DotLoader color="#1876f2" size={30} loading={loading} />
+              {error && <div className="error_text">{error}</div>}
+              {success && <div className="success_text">{success}</div>}
               <div className="sign_splitter"></div>
-              <button className="blue_btn open_signup">Create Account</button>
+              <button className="blue_btn open_signup" onClick={() => setVisible(true)}>Create Account</button>
             </div>
             <Link to="/" className="sign_extra">
               <b>Create a Page</b> for a celebrity, brand or business.

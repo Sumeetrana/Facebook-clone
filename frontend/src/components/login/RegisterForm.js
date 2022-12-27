@@ -20,7 +20,7 @@ const userInfos = {
   gender: "",
 };
 
-const RegisterForm = () => {
+const RegisterForm = ({ setVisible }) => {
   const [user, setUser] = useState(userInfos);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -68,7 +68,7 @@ const RegisterForm = () => {
     <div className="blur">
       <div className="register">
         <div className="register_header">
-          <i className="exit_icon"></i>
+          <i className="exit_icon" onClick={() => setVisible(false)}></i>
           <span>Sign Up</span>
           <span>it's quick and easy</span>
         </div>
@@ -102,7 +102,7 @@ const RegisterForm = () => {
               const { message, ...restData } = data;
               setTimeout(() => {
                 dispatch({ type: "LOGIN", payload: restData });
-                Cookie.set("user", restData);
+                Cookie.set("user", JSON.stringify(restData));
                 navigate("/");
               }, 2000);
             } catch (error) {
