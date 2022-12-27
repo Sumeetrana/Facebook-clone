@@ -1,6 +1,7 @@
 import "./style.css";
 import { useField, ErrorMessage } from "formik";
 import { useMediaQuery } from "react-responsive";
+
 export default function RegisterInput({ placeholder, bottom, ...props }) {
   const [field, meta] = useField(props);
   const view1 = useMediaQuery({
@@ -14,16 +15,17 @@ export default function RegisterInput({ placeholder, bottom, ...props }) {
   });
   const test1 = view3 && field.name === "first_name";
   const test2 = view3 && field.name === "last_name";
+  console.log("Meta: ", meta.touched, meta.error);
   return (
     <div className="input_wrap register_input_wrap">
       <input
         className={meta.touched && meta.error ? "input_error_border" : ""}
         style={{
           width: `${view1 && (field.name === "first_name" || field.name === "last_name")
-              ? "100%"
-              : view1 && (field.name === "email" || field.name === "password")
-                ? "370px"
-                : "300px"
+            ? "100%"
+            : view1 && (field.name === "email" || field.name === "password")
+              ? "370px"
+              : "300px"
             }`,
         }}
         type={field.type}

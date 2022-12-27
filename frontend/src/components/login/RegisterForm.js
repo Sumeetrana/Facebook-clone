@@ -1,6 +1,11 @@
+import axios from 'axios';
 import * as Yup from "yup";
+import Cookie from "js-cookie";
 import { Form, Formik } from 'formik';
 import React, { useState } from 'react';
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import DotLoader from "react-spinners/DotLoader";
 
 import RegisterInput from '../inputs/registerInput';
 
@@ -17,6 +22,9 @@ const userInfos = {
 
 const RegisterForm = () => {
   const [user, setUser] = useState(userInfos);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
   const {
     first_name,
     last_name,
@@ -28,10 +36,14 @@ const RegisterForm = () => {
     gender
   } = user;
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const handleRegisterChange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
+
   const years = Array.from(new Array(108), (val, index) => bYear - index);
   const months = Array.from(new Array(12), (val, index) => index + 1)
   const days = Array.from(new Array(31), (val, index) => index + 1)
@@ -61,6 +73,7 @@ const RegisterForm = () => {
           <span>it's quick and easy</span>
         </div>
         <Formik
+          enableReinitialize
           initialValues={{
             first_name,
             last_name,
@@ -72,6 +85,32 @@ const RegisterForm = () => {
             gender
           }}
           validationSchema={registerValidation}
+          onSubmit={async () => {
+            try {
+              const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/register`, {
+                first_name,
+                last_name,
+                email,
+                password,
+                bYear,
+                bMonth,
+                bDay,
+                gender
+              })
+              setError("");
+              setSuccess(data.message);
+              const { message, ...restData } = data;
+              setTimeout(() => {
+                dispatch({ type: "LOGIN", payload: restData });
+                Cookie.set("user", restData);
+                navigate("/");
+              }, 2000);
+            } catch (error) {
+              setLoading("");
+              setSuccess("");
+
+            }
+          }}
         >
           {(formik) => (
             <Form className="register_form">
@@ -81,12 +120,14 @@ const RegisterForm = () => {
                   placeholder="First name"
                   name="first_name"
                   onChange={handleRegisterChange}
+                  value={user.first_name}
                 />
                 <RegisterInput
                   type="text"
                   placeholder="Surname"
                   name="last_name"
                   onChange={handleRegisterChange}
+                  value={user.last_name}
                 />
               </div>
               <div className="reg_line">
@@ -94,6 +135,7 @@ const RegisterForm = () => {
                   type="text"
                   placeholder="Mobile number or email address"
                   name="email"
+                  value={user.email}
                   onChange={handleRegisterChange}
                 />
               </div>
@@ -102,6 +144,7 @@ const RegisterForm = () => {
                   type="password"
                   placeholder="New password"
                   name="password"
+                  value={user.password}
                   onChange={handleRegisterChange}
                 />
               </div>
@@ -146,6 +189,7 @@ const RegisterForm = () => {
                       id="male"
                       value="male"
                       onChange={handleRegisterChange}
+                      defaultChecked
                     />
                   </label>
                   <label htmlFor="female">
@@ -179,11 +223,15 @@ const RegisterForm = () => {
               <div className="reg_btn_wrapper">
                 <button className="blue_btn open_signup" style={{ height: 45 }}>Sign Up</button>
               </div>
+              <DotLoader color="#1876f2" size={30} loading={loading} />
+              {error && <div className="error_text">{error}</div>}
+              {success && <div className="success_text">{success}</div>}
             </Form>
           )}
         </Formik>
+
       </div>
-    </div>
+    </div >
   );
 };
 
