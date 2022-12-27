@@ -1,56 +1,25 @@
-.input_wrap {
-  position: relative;
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.register_input_wrap {
+  width: 100% !important;
   }
-  .input_wrap input {
-  outline: none;
-  border: 1px solid var(--bg-third);
-  background: var(--bg-primary);
-  width: 100%;
-  height: 50px;
-  font-size: 17px;
-  border-radius: 10px;
-  padding-left: 10px;
-  margin-bottom: 10px;
-  color: var(--color-primary);
+  .register_input_wrap input {
+  background: var(--bg-secondary);
   }
-  .input_error_border {
-  border-color: #b94a48 !important;
+  .register_input_wrap .input_error {
+  max-width: 300px;
   }
-  
-  .input_wrap i {
-    position: absolute;
-    right: 5px;
-    top: 14px;
-    transform: scale(0.8);
+  .register_input_wrap .error_arrow_bottom {
+  transform: translateY(1px);
   }
-
-  .input_error {
-    position: relative;
-    padding: 15px 10px;
-    width: 100%;
-    color: #fff;
-    font-size: 12px;
-    border-radius: 5px;
-    background-color: #b94a48;
-    margin-bottom: 15px;
+  .error_arrow_right {
+  border-right: 10px solid #b94a48;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  position: absolute;
+  left: -10px;
+  top: 14px;
   }
-
-  .error_arrow_top {
-    border-top: 10px solid #b94a48;
-    border-right: 10px solid transparent;
-    border-left: 10px solid transparent;
-    position: absolute;
-    bottom: -10px;
+  @media (min-width: 539px) {
+  .register_input_wrap .input_error {
+  max-width: 100%;
   }
-
-  .error_arrow_bottom {
-    border-bottom: 10px solid #b94a48;
-    border-right: 10px solid transparent;
-    border-left: 10px solid transparent;
-    position: absolute;
-    top: -10px;
   }
